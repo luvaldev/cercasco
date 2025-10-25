@@ -79,4 +79,4 @@ Proyecto desarrollado en el marco de la asignatura de **Proyectos en Tics I**,
 - [Universidad Diego Portales](https://www.udp.cl/)  
 - [Documentación del proyecto](./docs)  
 - [Firmware](./firmware)  
-- [Aplicación móvil](./app)  
+- [Aplicación móvil](./app) 
