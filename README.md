@@ -3,6 +3,8 @@
 **Cercasco** es un sistema inteligente de alerta diseñado para mejorar la seguridad de los ciclistas en entornos urbanos. Detecta vehículos que se aproximan por detrás y emite **alertas hápticas y visuales** en tiempo real, sin distraer al usuario.  
 Desarrollado como proyecto académico en la **Universidad Diego Portales (Chile)** por estudiantes de Ingeniería en Informática.
 
+[![img](./docs/Cercasco.png)](./docs/Cercasco.png)
+
 ---
 
 ## 🎯 Objetivo del Proyecto  
