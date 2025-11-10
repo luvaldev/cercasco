@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "369735134461",
+    "project_id": "cercasco-ff7bc",
+    "storage_bucket": "cercasco-ff7bc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369735134461:android:039c65a7d0ae7b484de294",
+        "android_client_info": {
+          "package_name": "com.example.cercasco_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDBg44o733XlpMV015dTDjw0b-lfADzvo8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

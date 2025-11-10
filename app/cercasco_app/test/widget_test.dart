@@ -1,30 +1,73 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+import 'package:flutter/foundation.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+class CercascoService with ChangeNotifier {
+  BluetoothDevice? _connectedDevice;
+  int _batteryLevel = 0;
+  bool _isConnected = false;
 
-import 'package:cercasco_app/main.dart';
+  int get batteryLevel => _batteryLevel;
+  bool get isConnected => _isConnected;
 
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  // UUIDs (DEBES OBTENERLOS DE TU FIRMWARE ESP32)
+  final String SERVICE_UUID = "TU_SERVICE_UUID";
+  final String BATTERY_CHAR_UUID = "TU_BATERIA_CHAR_UUID";
+  final String LED_CHAR_UUID = "TU_LED_CHAR_UUID";
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  CercascoService() {
+    // Inicia el escaneo
+    scanForDevice();
+  }
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  void scanForDevice() {
+    FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
-  });
+    FlutterBluePlus.scanResults.listen((results) {
+      for (ScanResult r in results) {
+        // Busca tu dispositivo (ej. por nombre)
+        if (r.device.platformName == "CercascoHub") {
+          FlutterBluePlus.stopScan();
+          connectToDevice(r.device);
+          break;
+        }
+      }
+    });
+  }
+
+  Future<void> connectToDevice(BluetoothDevice device) async {
+    try {
+      await device.connect();
+      _connectedDevice = device;
+      _isConnected = true;
+      discoverServices();
+    } catch (e) {
+      // ... manejo de error
+    }
+    notifyListeners();
+  }
+
+  Future<void> discoverServices() async {
+    if (_connectedDevice == null) return;
+    List<BluetoothService> services = await _connectedDevice!.discoverServices();
+
+    for (var service in services) {
+      if (service.uuid.toString() == SERVICE_UUID) {
+        for (var char in service.characteristics) {
+          if (char.uuid.toString() == BATTERY_CHAR_UUID) {
+            // Suscribirse a la batería
+            await char.setNotifyValue(true);
+            char.value.listen((value) {
+              _batteryLevel = value.isNotEmpty ? value[0] : 0;
+              notifyListeners();
+            });
+          }
+        }
+      }
+    }
+  }
+
+  Future<void> setLedColor(Color color) async {
+    // ... (Lógica para encontrar el characteristic de LED y escribir el valor)
+    // Esto enviará el comando al ESP32
+  }
 }

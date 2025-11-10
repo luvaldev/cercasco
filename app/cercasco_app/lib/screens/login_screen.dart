@@ -1,3 +1,5 @@
+// Importa el paquete de autenticación de Firebase
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
@@ -12,6 +14,46 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _isLoading = false; // Para mostrar un indicador de carga
+
+  // ---- FUNCIÓN DE LOGIN AÑADIDA ----
+  Future<void> _loginUser() async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Usa Firebase Auth para iniciar sesión
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+
+      // Si el login es exitoso, navega al Home
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      // Manejo de errores (ej. usuario no encontrado, contraseña incorrecta)
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al iniciar sesión: ${e.message}')),
+        );
+      }
+    } finally {
+      // Oculta el indicador de carga
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+  // ------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -22,51 +64,22 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Iniciar sesión',
-              style: TextStyle(
-                  fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
-            ),
+            // ... (El resto de tu UI: Título, TextFields) ...
+
             const SizedBox(height: 30),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Correo electrónico',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Contraseña',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                );
-              },
+
+            // ---- LÓGICA DE BOTÓN ACTUALIZADA ----
+            _isLoading
+                ? const CircularProgressIndicator()
+                : ElevatedButton(
+              onPressed: _loginUser, // Llama a la función de login
               style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 48),
                   backgroundColor: Colors.blueAccent),
               child: const Text('Entrar'),
             ),
-            const SizedBox(height: 15),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                );
-              },
-              child: const Text('¿No tienes cuenta? Regístrate'),
-            ),
+
+            // ... (El resto de tu UI: Botón de registro) ...
           ],
         ),
       ),
