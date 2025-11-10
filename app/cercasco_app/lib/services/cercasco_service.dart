@@ -20,7 +20,6 @@ class CercascoService with ChangeNotifier {
   bool get isConnected => _isConnected;
   bool get isScanning => _isScanning;
 
-  // --- UUIDs del Hardware (DEBES CAMBIAR ESTO) ---
   final String SERVICE_UUID = "0000180f-0000-1000-8000-00805f9b34fb"; // Ejemplo: Batería
   final String BATTERY_CHAR_UUID = "00002a19-0000-1000-8000-00805f9b34fb"; // Ejemplo: Nivel de Batería
   final String LED_CHAR_UUID = "0000180a-0000-1000-8000-00805f9b34fb"; // Ejemplo: Control de LED
@@ -49,7 +48,6 @@ class CercascoService with ChangeNotifier {
         return true;
       }
     } else {
-      // Para iOS
       var locationStatus = await Permission.location.request();
       if (locationStatus.isGranted) {
         return true;
@@ -61,12 +59,10 @@ class CercascoService with ChangeNotifier {
   Future<void> scanForDevice() async {
     if (_isScanning || _isConnected) return;
 
-    // --- ¡CORRECCIÓN AQUÍ! ---
-    // 1. Comprobar si el Bluetooth está encendido ANTES de escanear.
     var adapterState = await FlutterBluePlus.adapterState.first;
     if (adapterState != BluetoothAdapterState.on) {
       print("[CercascoService] Error: Bluetooth está apagado.");
-      return; // No hacer nada si el BT está apagado
+      return;
     }
     // -------------------------
 

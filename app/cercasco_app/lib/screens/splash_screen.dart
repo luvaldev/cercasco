@@ -26,20 +26,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Consumir el servicio de tema
     final themeService = Provider.of<ThemeService>(context);
 
-    // Definir colores basados en el tema
     final Color iconColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
     final Color textColor = themeService.isDarkMode ? Colors.white : Colors.black87;
     final Color sloganColor = themeService.isDarkMode ? Colors.white70 : Colors.black54;
 
     return Scaffold(
       body: Container(
-        // --- DECORACIÓN CONDICIONAL ---
         decoration: themeService.isDarkMode
             ? BoxDecoration(
-          // Fondo Degradado (Modo Oscuro)
           gradient: LinearGradient(
             colors: [
               Colors.blueAccent.shade100,
@@ -50,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
           ),
         )
             : BoxDecoration(
-          // Fondo Sólido (Modo Claro)
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
         // -------------------------
@@ -61,14 +56,14 @@ class _SplashScreenState extends State<SplashScreen> {
               Icon(
                 Icons.sports_motorsports,
                 size: 140,
-                color: iconColor, // Color dinámico
+                color: iconColor,
               ),
               const SizedBox(height: 20),
               Text(
                 'Cercasco',
                 style: TextStyle(
                   fontSize: 32,
-                  color: textColor, // Color dinámico
+                  color: textColor,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
@@ -78,13 +73,13 @@ class _SplashScreenState extends State<SplashScreen> {
                 '“Más seguridad, más confianza, más ciclismo.”',
                 style: TextStyle(
                   fontSize: 14,
-                  color: sloganColor, // Color dinámico
+                  color: sloganColor,
                   fontStyle: FontStyle.italic,
                 ),
               ),
               const SizedBox(height: 40),
               CircularProgressIndicator(
-                color: iconColor, // Color dinámico
+                color: iconColor,
                 strokeWidth: 3,
               ),
             ],

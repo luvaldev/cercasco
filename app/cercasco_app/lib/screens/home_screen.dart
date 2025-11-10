@@ -13,31 +13,27 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 2. Consumir el ThemeService
     final themeService = Provider.of<ThemeService>(context);
     final cercascoService = Provider.of<CercascoService>(context, listen: false);
 
-    // Inicia escaneo si es necesario
     if (!cercascoService.isConnected && !cercascoService.isScanning) {
       Future.microtask(() => cercascoService.scanForDevice());
     }
 
     return Scaffold(
-      extendBodyBehindAppBar: themeService.isDarkMode, // Extender solo en modo oscuro
+      extendBodyBehindAppBar: themeService.isDarkMode,
       appBar: AppBar(
         title: Text(
           'Cercasco Dashboard',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: themeService.isDarkMode ? Colors.white : null, // Color de texto de AppBar
+            color: themeService.isDarkMode ? Colors.white : null,
           ),
         ),
         centerTitle: true,
-        // AppBar transparente en modo oscuro, color de tema en modo claro
         backgroundColor: themeService.isDarkMode ? Colors.transparent : Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         actions: [
-          // --- INTERRUPTOR DE TEMA ---
           Consumer<ThemeService>(
             builder: (context, theme, child) => Switch(
               value: theme.isDarkMode,
@@ -51,7 +47,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: Icon(
               Icons.logout,
-              color: themeService.isDarkMode ? Colors.white : null, // Color de icono
+              color: themeService.isDarkMode ? Colors.white : null,
             ),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
@@ -66,11 +62,10 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        // --- DECORACIÓN CONDICIONAL ---
         width: double.infinity,
         height: double.infinity,
         decoration: themeService.isDarkMode
-            ? BoxDecoration( // Modo Oscuro: Degradado
+            ? BoxDecoration(
           gradient: LinearGradient(
             colors: [
               Colors.blueAccent.shade100,
@@ -80,7 +75,7 @@ class HomeScreen extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
         )
-            : BoxDecoration( // Modo Claro: Color sólido
+            : BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
         child: SafeArea(
@@ -89,7 +84,6 @@ class HomeScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // --- Tarjeta de Conexión del Casco ---
                 _buildGlassCard(
                   context: context,
                   child: Consumer<CercascoService>(
@@ -134,7 +128,6 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                // --- Tarjeta de Control de LEDs ---
                 _buildGlassCard(
                   context: context,
                   child: Consumer<UserDataService>(
@@ -238,11 +231,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // --- WIDGETS DE ESTILO REUTILIZABLES (AHORA DINÁMICOS) ---
 
-  // Estilo para las tarjetas
   Widget _buildGlassCard({required BuildContext context, required Widget child}) {
-    // Usa el CardTheme definido en main.dart
     final cardTheme = Theme.of(context).cardTheme;
     return Card(
       elevation: cardTheme.elevation,
@@ -257,7 +247,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Estilo para los títulos de las tarjetas
   Widget _buildCardTitle({required BuildContext context, required IconData icon, required String title}) {
     final bool isDark = Provider.of<ThemeService>(context, listen: false).isDarkMode;
     final Color iconColor = isDark ? Colors.white : Theme.of(context).primaryColor;
@@ -281,15 +270,12 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Estilo para los botones principales
   ButtonStyle _glassButtonStyle(BuildContext context) {
-    // Usa el ElevatedButtonThemeData definido en main.dart
     return Theme.of(context).elevatedButtonTheme.style!.copyWith(
       padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 12)),
     );
   }
 
-  // Estilo para el texto dentro de las tarjetas
   TextStyle _getCardTextStyle(BuildContext context, {bool isSubtitle = false}) {
     final bool isDark = Provider.of<ThemeService>(context, listen: false).isDarkMode;
     if (isDark) {
@@ -305,7 +291,6 @@ class HomeScreen extends StatelessWidget {
     }
   }
 
-  // Estilo para las filas de estadísticas
   Widget _buildStatRow({required BuildContext context, required IconData icon, required String label, required String value}) {
     final bool isDark = Provider.of<ThemeService>(context, listen: false).isDarkMode;
     final Color textColor = isDark ? Colors.white : Colors.black87;
@@ -331,7 +316,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Función para mostrar el selector de color (sin cambios)
   void _showColorPicker(BuildContext context, Color currentColor, Function(Color) onColorChanged) {
     showDialog(
       context: context,

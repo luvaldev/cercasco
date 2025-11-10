@@ -65,10 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 2. Consumir el servicio de tema
     final themeService = Provider.of<ThemeService>(context);
 
-    // 3. Definir colores dinámicos
     final Color iconColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
     final Color textColor = themeService.isDarkMode ? Colors.white : Colors.black87;
     final Color textLabelColor = themeService.isDarkMode ? Colors.white70 : Colors.black54;
@@ -78,7 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       body: Container(
-        // 4. Decoración condicional
         decoration: themeService.isDarkMode
             ? BoxDecoration(
           gradient: LinearGradient(
@@ -102,63 +99,60 @@ class _LoginScreenState extends State<LoginScreen> {
                 Icon(
                   Icons.sports_motorsports,
                   size: 100,
-                  color: iconColor, // Dinámico
+                  color: iconColor,
                 ),
                 const SizedBox(height: 20),
                 Text(
                   'Bienvenido a Cercasco',
                   style: TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold, color: textColor), // Dinámico
+                      fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
                 ),
                 const SizedBox(height: 40),
 
-                // --- TextField de Email ---
                 TextField(
                   controller: emailController,
-                  style: TextStyle(color: textColor), // Dinámico
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: 'Correo electrónico',
-                    labelStyle: TextStyle(color: textLabelColor), // Dinámico
+                    labelStyle: TextStyle(color: textLabelColor),
                     filled: true,
-                    fillColor: fieldBgColor, // Dinámico
+                    fillColor: fieldBgColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    prefixIcon: Icon(Icons.email_outlined, color: textLabelColor), // Dinámico
+                    prefixIcon: Icon(Icons.email_outlined, color: textLabelColor),
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
 
-                // --- TextField de Contraseña ---
                 TextField(
                   controller: passwordController,
                   obscureText: true,
-                  style: TextStyle(color: textColor), // Dinámico
+                  style: TextStyle(color: textColor),
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    labelStyle: TextStyle(color: textLabelColor), // Dinámico
+                    labelStyle: TextStyle(color: textLabelColor),
                     filled: true,
-                    fillColor: fieldBgColor, // Dinámico
+                    fillColor: fieldBgColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    prefixIcon: Icon(Icons.lock_outline, color: textLabelColor), // Dinámico
+                    prefixIcon: Icon(Icons.lock_outline, color: textLabelColor),
                   ),
                 ),
                 const SizedBox(height: 40),
 
-                // --- Botón de Entrar ---
                 _isLoading
                     ? CircularProgressIndicator(color: iconColor)
                     : ElevatedButton(
                   onPressed: _loginUser,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: buttonBgColor, // Dinámico
-                    foregroundColor: buttonFgColor, // Dinámico
+                    backgroundColor: buttonBgColor,
+                    foregroundColor: buttonFgColor,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -167,7 +161,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 20),
 
-                // --- Botón de Registro ---
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -177,7 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: Text(
                     '¿No tienes cuenta? Regístrate',
-                    style: TextStyle(color: textColor, fontWeight: FontWeight.w500), // Dinámico
+                    style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
                   ),
                 ),
               ],

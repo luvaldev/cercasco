@@ -54,7 +54,6 @@ class CercascoApp extends StatelessWidget {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          // --- LÍNEA 'textStyle' ELIMINADA DE AQUÍ ---
         ),
       ),
       useMaterial3: true,
@@ -64,7 +63,7 @@ class CercascoApp extends StatelessWidget {
     final darkTheme = ThemeData(
       brightness: Brightness.dark,
       primaryColor: primaryColor,
-      scaffoldBackgroundColor: Colors.black, // El degradado lo sobreescribirá
+      scaffoldBackgroundColor: Colors.black,
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: Brightness.dark,
@@ -90,7 +89,6 @@ class CercascoApp extends StatelessWidget {
           backgroundColor: Colors.white.withOpacity(0.9),
           foregroundColor: Colors.deepPurpleAccent.shade200,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          // --- LÍNEA 'textStyle' ELIMINADA DE AQUÍ ---
         ),
       ),
       useMaterial3: true,
