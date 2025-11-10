@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Importar
-import '../services/cercasco_service.dart'; // Importar
+import 'package:provider/provider.dart';
+import '../services/cercasco_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Escucha los cambios del servicio
     final cercascoService = Provider.of<CercascoService>(context);
+
+    if (!cercascoService.isConnected && !cercascoService.isScanning) {
+      cercascoService.scanForDevice();
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Cercasco Dashboard')),
@@ -19,23 +22,35 @@ class HomeScreen extends StatelessWidget {
             ListTile(
               leading: Icon(Icons.battery_full, color: Colors.green, size: 32),
               title: Text('Nivel de batería'),
-              // ---- DATO REAL ----
-              subtitle: Text('${cercascoService.batteryLevel} %'),
+              subtitle: Text(
+                  cercascoService.isConnected
+                      ? '${cercascoService.batteryLevel} %'
+                      : 'Desconectado'
+              ),
             ),
             Divider(),
             ListTile(
               leading: Icon(Icons.light_mode, color: Colors.amber, size: 32),
               title: Text('Control de LEDs'),
-              // TODO: Añadir botones o un slider para llamar a
-              // cercascoService.setLedColor(Colors.red)
-              subtitle: Text('Color: Azul, Intensidad: 70 %'),
+              subtitle: Text('Color: Azul, Intensidad: 70 % (Demo)'),
             ),
             Divider(),
             ListTile(
               leading: Icon(Icons.bluetooth_connected, color: Colors.blue, size: 32),
               title: Text('Conexión casco'),
-              // ---- DATO REAL ----
-              subtitle: Text(cercascoService.isConnected ? 'Activo' : 'Desconectado'),
+              subtitle: Text(
+                  cercascoService.isConnected
+                      ? 'Activo'
+                      : (cercascoService.isScanning ? 'Buscando...' : 'Desconectado')
+              ),
+              trailing: cercascoService.isConnected
+                  ? null
+                  : IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () {
+                  cercascoService.scanForDevice();
+                },
+              ),
             ),
             // TODO: Añadir la sección de Estadísticas e Historial de Alertas
           ],
