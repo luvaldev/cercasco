@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
 import '../services/user_data_service.dart';
+import '../services/theme_service.dart'; // 1. Importar
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,12 +26,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final userDataService = Provider.of<UserDataService>(context, listen: false);
-
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-
       await userDataService.loadUserData();
 
       if (mounted) {
@@ -66,10 +65,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 2. Consumir el servicio de tema
+    final themeService = Provider.of<ThemeService>(context);
+
+    // 3. Definir colores dinámicos
+    final Color iconColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
+    final Color textColor = themeService.isDarkMode ? Colors.white : Colors.black87;
+    final Color textLabelColor = themeService.isDarkMode ? Colors.white70 : Colors.black54;
+    final Color fieldBgColor = themeService.isDarkMode ? Colors.white.withOpacity(0.1) : Colors.white;
+    final Color buttonBgColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
+    final Color buttonFgColor = themeService.isDarkMode ? Colors.deepPurpleAccent : Colors.white;
+
     return Scaffold(
       body: Container(
-        // --- DEGRADADO AÑADIDO ---
-        decoration: BoxDecoration(
+        // 4. Decoración condicional
+        decoration: themeService.isDarkMode
+            ? BoxDecoration(
           gradient: LinearGradient(
             colors: [
               Colors.blueAccent.shade100,
@@ -78,75 +89,76 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
+        )
+            : BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        // -------------------------
         child: Center(
-          child: SingleChildScrollView( // Para evitar que el teclado tape los campos
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // --- Icono de Casco ---
-                const Icon(
+                Icon(
                   Icons.sports_motorsports,
                   size: 100,
-                  color: Colors.white,
+                  color: iconColor, // Dinámico
                 ),
                 const SizedBox(height: 20),
-                const Text(
+                Text(
                   'Bienvenido a Cercasco',
                   style: TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                      fontSize: 24, fontWeight: FontWeight.bold, color: textColor), // Dinámico
                 ),
                 const SizedBox(height: 40),
 
-                // --- TextField de Email (Minimalista) ---
+                // --- TextField de Email ---
                 TextField(
                   controller: emailController,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: textColor), // Dinámico
                   decoration: InputDecoration(
                     labelText: 'Correo electrónico',
-                    labelStyle: const TextStyle(color: Colors.white70),
+                    labelStyle: TextStyle(color: textLabelColor), // Dinámico
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
+                    fillColor: fieldBgColor, // Dinámico
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    prefixIcon: const Icon(Icons.email_outlined, color: Colors.white70),
+                    prefixIcon: Icon(Icons.email_outlined, color: textLabelColor), // Dinámico
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(height: 20),
 
-                // --- TextField de Contraseña (Minimalista) ---
+                // --- TextField de Contraseña ---
                 TextField(
                   controller: passwordController,
                   obscureText: true,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: textColor), // Dinámico
                   decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    labelStyle: const TextStyle(color: Colors.white70),
+                    labelStyle: TextStyle(color: textLabelColor), // Dinámico
                     filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
+                    fillColor: fieldBgColor, // Dinámico
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
-                    prefixIcon: const Icon(Icons.lock_outline, color: Colors.white70),
+                    prefixIcon: Icon(Icons.lock_outline, color: textLabelColor), // Dinámico
                   ),
                 ),
                 const SizedBox(height: 40),
 
                 // --- Botón de Entrar ---
                 _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? CircularProgressIndicator(color: iconColor)
                     : ElevatedButton(
                   onPressed: _loginUser,
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.deepPurpleAccent,
+                    backgroundColor: buttonBgColor, // Dinámico
+                    foregroundColor: buttonFgColor, // Dinámico
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -163,9 +175,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (context) => const RegisterScreen()),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     '¿No tienes cuenta? Regístrate',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                    style: TextStyle(color: textColor, fontWeight: FontWeight.w500), // Dinámico
                   ),
                 ),
               ],

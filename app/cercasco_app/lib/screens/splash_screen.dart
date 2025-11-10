@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/theme_service.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,8 +14,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Espera 3 segundos y pasa al login
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.pushReplacement(
@@ -26,10 +26,20 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Consumir el servicio de tema
+    final themeService = Provider.of<ThemeService>(context);
+
+    // Definir colores basados en el tema
+    final Color iconColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
+    final Color textColor = themeService.isDarkMode ? Colors.white : Colors.black87;
+    final Color sloganColor = themeService.isDarkMode ? Colors.white70 : Colors.black54;
+
     return Scaffold(
       body: Container(
-        // --- DEGRADADO AÑADIDO ---
-        decoration: BoxDecoration(
+        // --- DECORACIÓN CONDICIONAL ---
+        decoration: themeService.isDarkMode
+            ? BoxDecoration(
+          // Fondo Degradado (Modo Oscuro)
           gradient: LinearGradient(
             colors: [
               Colors.blueAccent.shade100,
@@ -38,41 +48,43 @@ class _SplashScreenState extends State<SplashScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
+        )
+            : BoxDecoration(
+          // Fondo Sólido (Modo Claro)
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
         // -------------------------
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // --- ICONO DE CASCO AÑADIDO ---
               Icon(
-                Icons.sports_motorsports, // Icono de casco de Flutter
+                Icons.sports_motorsports,
                 size: 140,
-                color: Colors.white,
+                color: iconColor, // Color dinámico
               ),
-              // -----------------------------
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Cercasco',
                 style: TextStyle(
                   fontSize: 32,
-                  color: Colors.white,
+                  color: textColor, // Color dinámico
                   fontWeight: FontWeight.bold,
                   letterSpacing: 2,
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
+              Text(
                 '“Más seguridad, más confianza, más ciclismo.”',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.white70,
+                  color: sloganColor, // Color dinámico
                   fontStyle: FontStyle.italic,
                 ),
               ),
               const SizedBox(height: 40),
-              const CircularProgressIndicator(
-                color: Colors.white,
+              CircularProgressIndicator(
+                color: iconColor, // Color dinámico
                 strokeWidth: 3,
               ),
             ],

@@ -5,35 +5,54 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import '../services/cercasco_service.dart';
 import '../services/user_data_service.dart';
-import 'login_screen.dart'; // Para navegar de vuelta al login
+import '../services/theme_service.dart'; // 1. Importar
+import 'login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Escucha el servicio BLE (sin reconstruir la UI) para iniciar escaneo
+    // 2. Consumir el ThemeService
+    final themeService = Provider.of<ThemeService>(context);
     final cercascoService = Provider.of<CercascoService>(context, listen: false);
 
-    // Inicia un escaneo BLE si no está conectado
+    // Inicia escaneo si es necesario
     if (!cercascoService.isConnected && !cercascoService.isScanning) {
       Future.microtask(() => cercascoService.scanForDevice());
     }
 
     return Scaffold(
-      // --- CAMBIO: AppBar transparente y extendido ---
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: themeService.isDarkMode, // Extender solo en modo oscuro
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Cercasco Dashboard',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: themeService.isDarkMode ? Colors.white : null, // Color de texto de AppBar
+          ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.transparent, // Transparente
+        // AppBar transparente en modo oscuro, color de tema en modo claro
+        backgroundColor: themeService.isDarkMode ? Colors.transparent : Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         actions: [
+          // --- INTERRUPTOR DE TEMA ---
+          Consumer<ThemeService>(
+            builder: (context, theme, child) => Switch(
+              value: theme.isDarkMode,
+              onChanged: (value) {
+                theme.toggleTheme();
+              },
+              activeTrackColor: Colors.blueAccent.shade100,
+              activeColor: Colors.white,
+            ),
+          ),
           IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white), // Icono blanco
+            icon: Icon(
+              Icons.logout,
+              color: themeService.isDarkMode ? Colors.white : null, // Color de icono
+            ),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
@@ -47,10 +66,11 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        // --- CAMBIO: Fondo degradado ---
+        // --- DECORACIÓN CONDICIONAL ---
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
+        decoration: themeService.isDarkMode
+            ? BoxDecoration( // Modo Oscuro: Degradado
           gradient: LinearGradient(
             colors: [
               Colors.blueAccent.shade100,
@@ -59,21 +79,26 @@ class HomeScreen extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
+        )
+            : BoxDecoration( // Modo Claro: Color sólido
+          color: Theme.of(context).scaffoldBackgroundColor,
         ),
-        child: SafeArea( // SafeArea para evitar que el contenido se vaya al notch
+        child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // --- Tarjeta de Conexión del Casco (Estilo "Glass") ---
+                // --- Tarjeta de Conexión del Casco ---
                 _buildGlassCard(
+                  context: context,
                   child: Consumer<CercascoService>(
                     builder: (context, service, child) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildCardTitle(
+                            context: context,
                             icon: Icons.bluetooth_connected,
                             title: 'Estado del Casco',
                           ),
@@ -81,7 +106,7 @@ class HomeScreen extends StatelessWidget {
                             service.isConnected
                                 ? 'Conectado a CercascoHub'
                                 : (service.isScanning ? 'Buscando CercascoHub...' : 'Desconectado'),
-                            style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.8)),
+                            style: _getCardTextStyle(context, isSubtitle: true),
                           ),
                           if (!service.isConnected) ...[
                             const SizedBox(height: 15),
@@ -95,11 +120,11 @@ class HomeScreen extends StatelessWidget {
                           const SizedBox(height: 15),
                           Row(
                             children: [
-                              Icon(Icons.battery_full, color: service.isConnected ? Colors.white : Colors.white.withOpacity(0.5), size: 24),
+                              Icon(Icons.battery_full, color: service.isConnected ? (themeService.isDarkMode ? Colors.white : Colors.green) : Colors.grey, size: 24),
                               const SizedBox(width: 8),
                               Text(
                                 'Batería: ${service.isConnected ? '${service.batteryLevel} %' : 'N/A'}',
-                                style: const TextStyle(fontSize: 15, color: Colors.white),
+                                style: _getCardTextStyle(context),
                               ),
                             ],
                           ),
@@ -109,28 +134,30 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                // --- Tarjeta de Control de LEDs (Estilo "Glass") ---
+                // --- Tarjeta de Control de LEDs ---
                 _buildGlassCard(
+                  context: context,
                   child: Consumer<UserDataService>(
                     builder: (context, userData, child) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildCardTitle(
+                            context: context,
                             icon: Icons.color_lens,
                             title: 'Control de LEDs RGB',
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Color actual:', style: TextStyle(fontSize: 16, color: Colors.white)),
+                              Text('Color actual:', style: _getCardTextStyle(context)),
                               Container(
                                 width: 40,
                                 height: 40,
                                 decoration: BoxDecoration(
                                   color: userData.ledColor,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white.withOpacity(0.5)),
+                                  border: Border.all(color: themeService.isDarkMode ? Colors.white.withOpacity(0.5) : Colors.grey.shade300),
                                 ),
                               ),
                             ],
@@ -139,8 +166,8 @@ class HomeScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('Intensidad:', style: TextStyle(fontSize: 16, color: Colors.white)),
-                              Text('${userData.ledIntensity} %', style: const TextStyle(fontSize: 16, color: Colors.white)),
+                              Text('Intensidad:', style: _getCardTextStyle(context)),
+                              Text('${userData.ledIntensity} %', style: _getCardTextStyle(context)),
                             ],
                           ),
                           Slider(
@@ -148,12 +175,10 @@ class HomeScreen extends StatelessWidget {
                             min: 0,
                             max: 100,
                             divisions: 100,
-                            activeColor: Colors.white,
-                            inactiveColor: Colors.white.withOpacity(0.3),
+                            activeColor: themeService.isDarkMode ? Colors.white : Theme.of(context).primaryColor,
+                            inactiveColor: themeService.isDarkMode ? Colors.white.withOpacity(0.3) : Colors.grey.shade300,
                             onChanged: (double value) {
                               userData.updateLedConfig(userData.ledColor, value.toInt());
-                              // TODO: Enviar el comando BLE de intensidad a cercascoService
-                              // cercascoService.setLedIntensity(value.toInt());
                             },
                           ),
                           const SizedBox(height: 15),
@@ -162,8 +187,6 @@ class HomeScreen extends StatelessWidget {
                               onPressed: () {
                                 _showColorPicker(context, userData.ledColor, (newColor) {
                                   userData.updateLedConfig(newColor, userData.ledIntensity);
-                                  // TODO: Enviar el comando BLE de color a cercascoService
-                                  // cercascoService.setLedColor(newColor);
                                 });
                               },
                               icon: const Icon(Icons.palette),
@@ -177,23 +200,27 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
 
-                // --- Tarjeta de Estadísticas (Estilo "Glass") ---
+                // --- Tarjeta de Estadísticas ---
                 _buildGlassCard(
+                  context: context,
                   child: Consumer<UserDataService>(
                     builder: (context, userData, child) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildCardTitle(
+                            context: context,
                             icon: Icons.analytics,
                             title: 'Estadísticas de Uso',
                           ),
                           _buildStatRow(
+                            context: context,
                             icon: Icons.shield_outlined,
                             label: 'Total de Alertas:',
                             value: '${userData.totalAlerts}',
                           ),
                           _buildStatRow(
+                            context: context,
                             icon: Icons.map_outlined,
                             label: 'Último Viaje (km):',
                             value: '0', // Placeholder
@@ -211,18 +238,17 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // --- WIDGETS DE ESTILO REUTILIZABLES ---
+  // --- WIDGETS DE ESTILO REUTILIZABLES (AHORA DINÁMICOS) ---
 
-  // Estilo para las tarjetas "Glassmorphism"
-  Widget _buildGlassCard({required Widget child}) {
+  // Estilo para las tarjetas
+  Widget _buildGlassCard({required BuildContext context, required Widget child}) {
+    // Usa el CardTheme definido en main.dart
+    final cardTheme = Theme.of(context).cardTheme;
     return Card(
-      elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.2),
-      color: Colors.white.withOpacity(0.15), // Color semitransparente
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.white.withOpacity(0.2)), // Borde sutil
-      ),
+      elevation: cardTheme.elevation,
+      shadowColor: cardTheme.shadowColor,
+      color: cardTheme.color,
+      shape: cardTheme.shape,
       margin: const EdgeInsets.only(bottom: 20),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -232,19 +258,23 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Estilo para los títulos de las tarjetas
-  Widget _buildCardTitle({required IconData icon, required String title}) {
+  Widget _buildCardTitle({required BuildContext context, required IconData icon, required String title}) {
+    final bool isDark = Provider.of<ThemeService>(context, listen: false).isDarkMode;
+    final Color iconColor = isDark ? Colors.white : Theme.of(context).primaryColor;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 28),
+          Icon(icon, color: iconColor, size: 28),
           const SizedBox(width: 10),
           Text(
             title,
-            style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
           ),
         ],
       ),
@@ -253,31 +283,48 @@ class HomeScreen extends StatelessWidget {
 
   // Estilo para los botones principales
   ButtonStyle _glassButtonStyle(BuildContext context) {
-    return ElevatedButton.styleFrom(
-      backgroundColor: Colors.white.withOpacity(0.9),
-      foregroundColor: Colors.deepPurpleAccent.shade200,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-      textStyle: const TextStyle(fontWeight: FontWeight.bold),
+    // Usa el ElevatedButtonThemeData definido en main.dart
+    return Theme.of(context).elevatedButtonTheme.style!.copyWith(
+      padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 25, vertical: 12)),
     );
   }
 
+  // Estilo para el texto dentro de las tarjetas
+  TextStyle _getCardTextStyle(BuildContext context, {bool isSubtitle = false}) {
+    final bool isDark = Provider.of<ThemeService>(context, listen: false).isDarkMode;
+    if (isDark) {
+      return TextStyle(
+        fontSize: isSubtitle ? 16 : 15,
+        color: isSubtitle ? Colors.white.withOpacity(0.8) : Colors.white,
+      );
+    } else {
+      return TextStyle(
+        fontSize: isSubtitle ? 16 : 15,
+        color: isSubtitle ? Colors.black54 : Colors.black87,
+      );
+    }
+  }
+
   // Estilo para las filas de estadísticas
-  Widget _buildStatRow({required IconData icon, required String label, required String value}) {
+  Widget _buildStatRow({required BuildContext context, required IconData icon, required String label, required String value}) {
+    final bool isDark = Provider.of<ThemeService>(context, listen: false).isDarkMode;
+    final Color textColor = isDark ? Colors.white : Colors.black87;
+    final Color subTextColor = isDark ? Colors.white.withOpacity(0.8) : Colors.black54;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white.withOpacity(0.8), size: 20),
+          Icon(icon, color: subTextColor, size: 20),
           const SizedBox(width: 10),
           Text(
             label,
-            style: TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.8)),
+            style: TextStyle(fontSize: 16, color: subTextColor),
           ),
           const Spacer(),
           Text(
             value,
-            style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, color: textColor, fontWeight: FontWeight.bold),
           ),
         ],
       ),

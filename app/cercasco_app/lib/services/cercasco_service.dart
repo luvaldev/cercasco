@@ -20,7 +20,7 @@ class CercascoService with ChangeNotifier {
   bool get isConnected => _isConnected;
   bool get isScanning => _isScanning;
 
-  // --- UUIDs del Hardware ---
+  // --- UUIDs del Hardware (DEBES CAMBIAR ESTO) ---
   final String SERVICE_UUID = "0000180f-0000-1000-8000-00805f9b34fb"; // Ejemplo: Batería
   final String BATTERY_CHAR_UUID = "00002a19-0000-1000-8000-00805f9b34fb"; // Ejemplo: Nivel de Batería
   final String LED_CHAR_UUID = "0000180a-0000-1000-8000-00805f9b34fb"; // Ejemplo: Control de LED
@@ -61,9 +61,18 @@ class CercascoService with ChangeNotifier {
   Future<void> scanForDevice() async {
     if (_isScanning || _isConnected) return;
 
+    // --- ¡CORRECCIÓN AQUÍ! ---
+    // 1. Comprobar si el Bluetooth está encendido ANTES de escanear.
+    var adapterState = await FlutterBluePlus.adapterState.first;
+    if (adapterState != BluetoothAdapterState.on) {
+      print("[CercascoService] Error: Bluetooth está apagado.");
+      return; // No hacer nada si el BT está apagado
+    }
+    // -------------------------
+
     bool permissionsGranted = await _requestPermissions();
     if (!permissionsGranted) {
-      print("Error: Permisos de Localización y Bluetooth son requeridos.");
+      print("[CercascoService] Error: Permisos de Localización y Bluetooth son requeridos.");
       return;
     }
 
@@ -82,7 +91,14 @@ class CercascoService with ChangeNotifier {
       }
     });
 
-    FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
+    try {
+      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 15));
+    } catch (e) {
+      print("[CercascoService] Error al iniciar escaneo: $e");
+      _isScanning = false;
+      notifyListeners();
+    }
+
 
     Future.delayed(const Duration(seconds: 15), () {
       if (_isScanning) {
@@ -116,12 +132,10 @@ class CercascoService with ChangeNotifier {
 
     try {
       print(">>> Llamando a device.connect()...");
-
       await device.connect(
           autoConnect: false,
           timeout: const Duration(seconds: 15)
       );
-      // ---------------------------------
 
       _connectedDevice = device;
       _isConnected = true;
@@ -169,7 +183,6 @@ class CercascoService with ChangeNotifier {
 
   Future<void> setLedColor(Color color) async {
     if (_connectedDevice == null || !_isConnected) return;
-
     print("Simulación: Enviando color: $color");
   }
 
