@@ -3,20 +3,23 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/cercasco_service.dart';
+import 'services/user_data_service.dart'; // 1. Importar el nuevo servicio
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // Envolver la App en el Provider
+  // 2. Usar MultiProvider para manejar ambos servicios
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => CercascoService(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CercascoService()),
+        ChangeNotifierProvider(create: (context) => UserDataService()),
+      ],
       child: const CercascoApp(),
     ),
   );
 }
-
 
 class CercascoApp extends StatelessWidget {
   const CercascoApp({super.key});
