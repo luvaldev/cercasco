@@ -3,14 +3,11 @@
   --color-text: #ffffff;
   --color-text-muted: #e0e0e0;
   --color-accent: #00c6ff;
-  /* Un azul eléctrico más brillante */
   --color-accent-dark: #0072ff;
-  /* Un azul más profundo */
 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.6;
   font-weight: 400;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -21,9 +18,6 @@ body {
   margin: 0;
   color: var(--color-text);
   min-height: 100vh;
-
-  /* --- FONDO ANIMADO --- */
-  /* Colores inspirados en 'deep space' y 'cyberpunk' */
   background: linear-gradient(-45deg, #0b022d, #1f0033, #004d40, #002663);
   background-size: 400% 400%;
   animation: gradientBG 15s ease infinite;
@@ -48,7 +42,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  /* Añadimos un overlay sutil para que el texto resalte */
   background-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -58,16 +51,13 @@ body {
   padding: 0 2rem;
 }
 
-/* --- Header con efecto Glass --- */
+/* Header (sin cambios) */
 .header {
   padding: 1.5rem 0;
   position: fixed;
-  /* Lo hacemos fijo */
   width: 100%;
   top: 0;
   z-index: 1000;
-
-  /* Efecto Glass */
   background: rgba(25, 25, 35, 0.35);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -79,7 +69,6 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
-  /* Ajustamos padding para que no se pegue a los bordes */
 }
 
 .logo {
@@ -87,52 +76,39 @@ body {
   font-weight: 700;
   color: var(--color-text);
   text-decoration: none;
-  /* Efecto de resplandor sutil */
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
+
+/* ============================================== */
+/* --- SECCIÓN HERO MODIFICADA --- */
+/* ============================================== */
+
 .hero {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Dos columnas: 50% y 50% */
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  /* Centra verticalmente el contenido de ambas columnas */
   height: 100vh;
   /* Ocupa toda la pantalla */
   padding-top: 80px;
   /* Espacio para el header fijo */
-  position: relative;
-  /* ¡CLAVE! Necesario para el position: absolute del canvas */
-  overflow: hidden;
-  /* Para evitar cualquier desbordamiento */
+  gap: 2rem;
+  /* Espacio entre las dos columnas */
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
-/* --- REGLA NUEVA --- */
-/* Este wrapper nos asegura que todo el contenido de texto
-   esté por encima del canvas */
-.hero-content {
-  position: relative;
-  z-index: 10;
+/* --- Columna Izquierda (Texto) --- */
+.hero-text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  /* Alinea el texto a la izquierda */
+  padding: 2rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  /* Sombra para legibilidad */
-}
-
-/* --- REGLA MODIFICADA --- */
-.hero-canvas {
-  position: absolute;
-  /* ¡CLAVE! Lo saca del flujo normal */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  /* Ocupa toda la pantalla, como fondo */
-  z-index: 1;
-  /* Lo pone detrás de .hero-content (z-index: 10) */
-  cursor: grab;
-}
-
-.hero-canvas:active {
-  cursor: grabbing;
 }
 
 .hero h1 {
@@ -153,20 +129,99 @@ body {
   margin-top: 1rem;
 }
 
-/* --- REGLA MODIFICADA --- */
+/* --- Caja de Integrantes (Caja Negra) --- */
+.hero-team {
+  /* Reutilizamos el estilo de tarjeta de cristal */
+  padding: 1.5rem 2rem;
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 450px;
+}
+
+.hero-team h4 {
+  margin: 0 0 1rem 0;
+  color: var(--color-accent);
+  text-align: left;
+  font-size: 1.25rem;
+}
+
+.hero-team ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* Dos columnas para los nombres */
+  gap: 0.5rem 1rem;
+}
+
+.hero-team li {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+}
+
+/* --- Columna Derecha (Visor 3D) --- */
+.hero-canvas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Contenedor del 3D (Caja Azul) --- */
+.hero-canvas-box {
+  width: 100%;
+  height: 60vh;
+  /* Altura fija para el visor */
+  max-height: 500px;
+
+  /* Le damos el mismo estilo 'glass' */
+  background: rgba(25, 25, 35, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  /* Importante para que el canvas se quede dentro */
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.hero-canvas-box:hover {
+  border-color: rgba(0, 198, 255, 0.5);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* El canvas ahora vive DENTRO de la caja */
+.hero-canvas-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+  cursor: grab;
+}
+
+.hero-canvas-box canvas:active {
+  cursor: grabbing;
+}
+
 .hero-instructions {
   font-size: 1rem;
   color: var(--color-text-muted);
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  /* Margen para separarlo de la caja */
   font-style: italic;
   opacity: 0.7;
-  position: relative;
-  /* ¡CLAVE! */
-  z-index: 10;
-  /* Lo pone por encima del canvas */
+  text-align: center;
 }
 
-/* --- Secciones Generales --- */
+/* ============================================== */
+/* --- FIN SECCIÓN HERO MODIFICADA --- */
+/* ============================================== */
+
+
+/* --- Secciones Generales (sin cambios) --- */
 .section {
   padding: 6rem 0;
   position: relative;
@@ -178,13 +233,11 @@ body {
   font-weight: 700;
   text-align: center;
   margin-bottom: 4rem;
-
-  /* Título de sección con acento */
   color: var(--color-accent);
   text-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
 }
 
-/* --- Efecto Glass para todas las tarjetas --- */
+/* --- Tarjetas Glass (sin cambios) --- */
 .glass-card {
   background: rgba(25, 25, 35, 0.35);
   backdrop-filter: blur(10px);
@@ -200,10 +253,9 @@ body {
   transform: translateY(-5px);
   box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
   border-color: rgba(0, 198, 255, 0.5);
-  /* Borde acentuado al hacer hover */
 }
 
-/* Sección Problema y Solución */
+/* ... (Resto de estilos: .problem-solution-grid, .features-grid, etc. sin cambios) ... */
 .problem-solution-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -218,7 +270,6 @@ body {
 .problem-solution-grid h3 {
   font-size: 2.2rem;
   font-weight: 700;
-  /* Color del título de la tarjeta */
   background: linear-gradient(90deg, var(--color-accent), #ffffff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -251,7 +302,6 @@ body {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Sección Features (Cómo Funciona) */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -259,7 +309,6 @@ body {
 }
 
 .feature-card {
-  /* Usamos .glass-card directamente aquí */
   background: rgba(25, 25, 35, 0.35);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -288,7 +337,6 @@ body {
   color: var(--color-text-muted);
 }
 
-/* Sección Equipo */
 .team-grid {
   display: flex;
   justify-content: center;
@@ -304,7 +352,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0.75rem 1.5rem;
   border-radius: 50px;
-  /* Píldoras */
   transition: all 0.3s ease;
 }
 
@@ -314,7 +361,6 @@ body {
   text-shadow: none;
 }
 
-/* Footer */
 .footer {
   padding: 4rem 0;
   text-align: center;
@@ -323,15 +369,33 @@ body {
   background: rgba(0, 0, 0, 0.3);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: auto;
-  /* Empuja el footer hacia abajo */
 }
 
-/* Media Queries para Móviles */
+
+/* --- Media Queries (Adaptación a Móvil) --- */
 @media (max-width: 768px) {
   .hero {
-    height: 90vh;
-    padding: 2rem 0;
-    padding-top: 80px;
+    grid-template-columns: 1fr;
+    /* Colapsa a una columna */
+    height: auto;
+    /* Altura automática */
+    padding-top: 100px;
+    /* Más espacio del header */
+    padding-bottom: 4rem;
+  }
+
+  .hero-text-content {
+    align-items: center;
+    /* Centra todo en móvil */
+    text-align: center;
+  }
+
+  .hero-team {
+    max-width: 100%;
+  }
+
+  .hero-team h4 {
+    text-align: center;
   }
 
   .hero h1 {
@@ -342,15 +406,16 @@ body {
     font-size: 1.1rem;
   }
 
-  .hero-canvas {
-    margin-top: 0;
+  .hero-canvas-box {
+    height: 45vh;
+    /* Caja 3D más pequeña en móvil */
+    width: 100%;
   }
 
   .problem-solution-grid {
     grid-template-columns: 1fr;
   }
 
-  /* Invertir orden en móvil para Solution */
   .solution-section .problem-solution-grid {
     display: flex;
     flex-direction: column-reverse;
