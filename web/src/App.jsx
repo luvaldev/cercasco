@@ -4,7 +4,6 @@ import Hero from './components/Hero';
 import Problem from './components/Problem';
 import Solution from './components/Solution';
 import Features from './components/Features';
-import Team from './components/Team';
 import Footer from './components/Footer';
 
 function App() {
@@ -12,11 +11,18 @@ function App() {
     <>
       <Header />
       <main>
-        <Hero />
-        <Problem />
-        <Solution />
+        {/* Envolvemos cada componente en un div con ID para la navegación */}
+        <div id="home">
+          <Hero />
+        </div>
+        <div id="problem">
+          <Problem />
+        </div>
+        <div id="solution">
+          <Solution />
+        </div>
+        {/* Features ya tiene el ID dentro de su propio componente, pero esto asegura el orden */}
         <Features />
-        <Team />
       </main>
       <Footer />
     </>

@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 /* Reset básico y configuración global */
 :root {
   --color-text: #ffffff;
@@ -12,6 +17,10 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -37,6 +46,17 @@ body {
   }
 }
 
+/* Animación para el Título */
+@keyframes textShine {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
 /* Estructura principal */
 #root {
   display: flex;
@@ -46,12 +66,13 @@ body {
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1200px;
+  /* Un poco más ancho para pantallas modernas */
   margin: 0 auto;
   padding: 0 2rem;
 }
 
-/* Header (sin cambios) */
+/* Navegación del Header */
 .header {
   padding: 1.5rem 0;
   position: fixed;
@@ -79,25 +100,41 @@ body {
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
 
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--color-accent);
+  text-shadow: 0 0 8px rgba(0, 198, 255, 0.6);
+}
 
 /* ============================================== */
-/* --- SECCIÓN HERO MODIFICADA --- */
+/* --- SECCIÓN HERO REFORMADA --- */
 /* ============================================== */
 
 .hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  /* Dos columnas: 50% y 50% */
+  grid-template-columns: 1fr 1.2fr;
+  /* Damos un poco más de espacio al 3D (derecha) */
   align-items: center;
-  /* Centra verticalmente el contenido de ambas columnas */
-  height: 100vh;
-  /* Ocupa toda la pantalla */
+  min-height: 100vh;
+  /* Asegura que ocupe la pantalla completa */
   padding-top: 80px;
-  /* Espacio para el header fijo */
-  gap: 2rem;
-  /* Espacio entre las dos columnas */
-  padding-left: 2rem;
-  padding-right: 2rem;
+  gap: 4rem;
+  /* Aumentamos la distancia entre texto y modelo */
+  padding-left: 4rem;
+  /* Más aire a los costados */
+  padding-right: 4rem;
 }
 
 /* --- Columna Izquierda (Texto) --- */
@@ -106,43 +143,64 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  /* Alinea el texto a la izquierda */
-  padding: 2rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: left;
+  z-index: 10;
+  /* Asegura que esté por encima */
 }
 
 .hero h1 {
-  font-size: 4.5rem;
-  font-weight: 800;
+  font-size: 5rem;
+  /* Título más grande */
+  font-weight: 900;
   margin: 0;
-  letter-spacing: -0.025em;
-  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-dark), #e0e0e0);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+
+  /* EFECTO DE TEXTO LLAMATIVO Y ANIMADO */
+  background: linear-gradient(to right,
+      var(--color-accent) 20%,
+      #ffffff 50%,
+      var(--color-accent) 80%);
+  background-size: 200% auto;
+  color: #000;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  animation: textShine 4s linear infinite;
+  /* Animación continua */
+
+  text-shadow: 0 0 30px rgba(0, 198, 255, 0.3);
+  /* Resplandor suave detrás */
 }
 
 .hero p {
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   color: var(--color-text-muted);
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+  max-width: 90%;
 }
 
-/* --- Caja de Integrantes (Caja Negra) --- */
+/* --- Caja de Integrantes (Estilo Glass) --- */
 .hero-team {
-  /* Reutilizamos el estilo de tarjeta de cristal */
+  background: rgba(10, 10, 15, 0.6);
+  /* Un poco más oscuro para contraste */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   padding: 1.5rem 2rem;
-  margin-top: 2rem;
   width: 100%;
-  max-width: 450px;
+  max-width: 480px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .hero-team h4 {
   margin: 0 0 1rem 0;
   color: var(--color-accent);
-  text-align: left;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .hero-team ul {
@@ -151,13 +209,24 @@ body {
   margin: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  /* Dos columnas para los nombres */
-  gap: 0.5rem 1rem;
+  gap: 0.8rem 2rem;
 }
 
 .hero-team li {
-  font-size: 1rem;
-  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+/* Bullet point personalizado */
+.hero-team li::before {
+  content: "•";
+  color: var(--color-accent);
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
 }
 
 /* --- Columna Derecha (Visor 3D) --- */
@@ -168,62 +237,60 @@ body {
   justify-content: center;
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
-/* --- Contenedor del 3D (Caja Azul) --- */
+/* --- Contenedor del 3D (Caja Azul Neon) --- */
 .hero-canvas-box {
   width: 100%;
-  height: 60vh;
-  /* Altura fija para el visor */
-  max-height: 500px;
+  height: 65vh;
+  /* Altura generosa */
+  max-height: 600px;
 
-  /* Le damos el mismo estilo 'glass' */
-  background: rgba(25, 25, 35, 0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  /* Efecto Glass + Borde Neón sutil */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 24px;
+  border: 1px solid rgba(0, 198, 255, 0.2);
+  box-shadow: 0 0 40px rgba(0, 198, 255, 0.1), inset 0 0 20px rgba(0, 198, 255, 0.05);
 
-  /* Importante para que el canvas se quede dentro */
   overflow: hidden;
-  transition: all 0.3s ease;
+  position: relative;
 }
 
-.hero-canvas-box:hover {
-  border-color: rgba(0, 198, 255, 0.5);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
-}
+.hero-canvas-box {
+  width: 100%;
+  height: 65vh;
+  max-height: 600px;
 
-/* El canvas ahora vive DENTRO de la caja */
-.hero-canvas-box canvas {
-  width: 100% !important;
-  height: 100% !important;
-  cursor: grab;
-}
+  /* Diseño fijo, sin animaciones de expansión */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 24px;
+  border: 1px solid rgba(0, 198, 255, 0.2);
 
-.hero-canvas-box canvas:active {
-  cursor: grabbing;
+  /* Sombra estática, no cambia al pasar el mouse */
+  box-shadow: 0 0 40px rgba(0, 198, 255, 0.1), inset 0 0 20px rgba(0, 198, 255, 0.05);
+
+  overflow: hidden;
+  position: relative;
 }
 
 .hero-instructions {
-  font-size: 1rem;
-  color: var(--color-text-muted);
-  margin-top: 1.5rem;
-  /* Margen para separarlo de la caja */
-  font-style: italic;
-  opacity: 0.7;
-  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-accent);
+  margin-top: 1rem;
+  font-weight: 500;
+  opacity: 0.8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-/* ============================================== */
-/* --- FIN SECCIÓN HERO MODIFICADA --- */
-/* ============================================== */
-
-
-/* --- Secciones Generales (sin cambios) --- */
+/* --- Secciones Generales --- */
 .section {
-  padding: 6rem 0;
+  padding: 7rem 0;
   position: relative;
   overflow: hidden;
 }
@@ -232,39 +299,38 @@ body {
   font-size: 3rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 5rem;
   color: var(--color-accent);
-  text-shadow: 0 0 10px rgba(0, 198, 255, 0.7);
+  text-shadow: 0 0 15px rgba(0, 198, 255, 0.5);
 }
 
-/* --- Tarjetas Glass (sin cambios) --- */
+/* --- Tarjetas Glass Generales --- */
 .glass-card {
-  background: rgba(25, 25, 35, 0.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 16px;
+  background: rgba(25, 25, 35, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 2rem;
+  padding: 2.5rem;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 .glass-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
-  border-color: rgba(0, 198, 255, 0.5);
+  border-color: rgba(0, 198, 255, 0.6);
 }
 
-/* ... (Resto de estilos: .problem-solution-grid, .features-grid, etc. sin cambios) ... */
+/* ... (Grid y features sin cambios mayores) ... */
 .problem-solution-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3rem;
+  gap: 4rem;
   align-items: center;
 }
 
 .problem-solution-grid .text-content {
-  max-width: 500px;
+  max-width: 100%;
 }
 
 .problem-solution-grid h3 {
@@ -298,8 +364,8 @@ body {
 
 .problem-solution-grid img {
   width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
 }
 
 .features-grid {
@@ -371,22 +437,39 @@ body {
   margin-top: auto;
 }
 
+.circuit-container {
+  height: 500px;
+  width: 100%;
+  position: relative;
+}
 
-/* --- Media Queries (Adaptación a Móvil) --- */
+@media (max-width: 1024px) {
+  .hero {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    gap: 2rem;
+  }
+
+  .hero h1 {
+    font-size: 4rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
   .hero {
     grid-template-columns: 1fr;
-    /* Colapsa a una columna */
     height: auto;
-    /* Altura automática */
     padding-top: 100px;
-    /* Más espacio del header */
     padding-bottom: 4rem;
+    text-align: center;
   }
 
   .hero-text-content {
     align-items: center;
-    /* Centra todo en móvil */
     text-align: center;
   }
 
@@ -394,22 +477,21 @@ body {
     max-width: 100%;
   }
 
-  .hero-team h4 {
-    text-align: center;
+  .hero-team ul {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .hero-team li {
+    justify-content: center;
   }
 
   .hero h1 {
-    font-size: 2.8rem;
-  }
-
-  .hero p {
-    font-size: 1.1rem;
+    font-size: 3rem;
   }
 
   .hero-canvas-box {
-    height: 45vh;
-    /* Caja 3D más pequeña en móvil */
-    width: 100%;
+    height: 50vh;
   }
 
   .problem-solution-grid {
@@ -428,4 +510,46 @@ body {
   .section h2 {
     font-size: 2.2rem;
   }
+}
+
+/* --- Estilos del Botón Hero --- */
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+  padding: 0.8rem 2rem;
+
+  /* Estilo Neón Transparente */
+  background: rgba(0, 198, 255, 0.1);
+  border: 2px solid var(--color-accent);
+  border-radius: 50px;
+
+  /* Texto */
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+
+  /* Animación suave */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 15px rgba(0, 198, 255, 0.2);
+}
+
+.hero-button:hover {
+  /* Efecto al pasar el mouse: relleno sólido y más brillo */
+  background: var(--color-accent);
+  color: #0b022d;
+  /* Color oscuro para el texto al hacer hover */
+  box-shadow: 0 0 30px rgba(0, 198, 255, 0.6);
+  transform: translateY(-3px);
+  /* Se eleva un poco */
+  cursor: pointer;
+}
+
+.hero-button svg {
+  /* Asegura que el icono de Github herede el color del texto */
+  fill: currentColor;
 }

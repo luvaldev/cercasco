@@ -7,7 +7,12 @@ export default function Header() {
         <a href="#" className="logo">
           Cercasco
         </a>
-        <nav>{/* Puedes agregar links aquí más tarde */}</nav>
+        <nav className="nav-links">
+          <a href="#home">Inicio</a>
+          <a href="#problem">Problema</a>
+          <a href="#solution">Solución</a>
+          <a href="#features">Circuito</a>
+        </nav>
       </div>
     </header>
   );
