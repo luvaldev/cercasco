@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
 import '../services/user_data_service.dart';
-import '../services/theme_service.dart'; // 1. Importar
+import '../services/theme_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -42,8 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al iniciar sesión: ${e.message}'),
+            content: Text('Error: ${e.message}'),
             backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -66,101 +67,118 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final themeService = Provider.of<ThemeService>(context);
+    final bool isDark = themeService.isDarkMode;
 
-    final Color iconColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
-    final Color textColor = themeService.isDarkMode ? Colors.white : Colors.black87;
-    final Color textLabelColor = themeService.isDarkMode ? Colors.white70 : Colors.black54;
-    final Color fieldBgColor = themeService.isDarkMode ? Colors.white.withOpacity(0.1) : Colors.white;
-    final Color buttonBgColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
-    final Color buttonFgColor = themeService.isDarkMode ? Colors.deepPurpleAccent : Colors.white;
+    // Colores del diseño nuevo
+    final Color neonPink = const Color(0xFFD040C0);
+    final Color neonCyan = const Color(0xFF40C4FF);
+
+    // Estilos dinámicos
+    final Color textColor = isDark ? Colors.white : Colors.black87;
+    final Color hintColor = isDark ? Colors.white54 : Colors.black45;
+    // Fondo de inputs: Morado oscuro semitransparente en modo oscuro
+    final Color inputFill = isDark ? const Color(0xFF1F1B40).withOpacity(0.6) : Colors.white;
+    final Color inputBorder = isDark ? Colors.white10 : Colors.grey.shade300;
 
     return Scaffold(
       body: Container(
-        decoration: themeService.isDarkMode
-            ? BoxDecoration(
+        decoration: isDark
+            ? const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.blueAccent.shade100,
-              Colors.deepPurpleAccent.shade100,
+              Color(0xFF0A0A1E),
+              Color(0xFF181035),
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         )
-            : BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-        ),
+            : BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(32.0),
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.sports_motorsports,
-                  size: 100,
-                  color: iconColor,
+                  Icons.sports_motorsports_outlined,
+                  size: 80,
+                  color: isDark ? neonCyan : Theme.of(context).primaryColor,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 Text(
-                  'Bienvenido a Cercasco',
+                  'Bienvenido',
                   style: TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: textColor,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Inicia sesión para continuar',
+                  style: TextStyle(fontSize: 16, color: hintColor),
                 ),
                 const SizedBox(height: 40),
 
-                TextField(
+                // --- Input Email ---
+                _buildCyberInput(
                   controller: emailController,
-                  style: TextStyle(color: textColor),
-                  decoration: InputDecoration(
-                    labelText: 'Correo electrónico',
-                    labelStyle: TextStyle(color: textLabelColor),
-                    filled: true,
-                    fillColor: fieldBgColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    prefixIcon: Icon(Icons.email_outlined, color: textLabelColor),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
+                  label: 'Correo electrónico',
+                  icon: Icons.email_outlined,
+                  isDark: isDark,
+                  fillColor: inputFill,
+                  borderColor: inputBorder,
+                  textColor: textColor,
+                  hintColor: hintColor,
                 ),
                 const SizedBox(height: 20),
 
-                TextField(
+                // --- Input Password ---
+                _buildCyberInput(
                   controller: passwordController,
-                  obscureText: true,
-                  style: TextStyle(color: textColor),
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    labelStyle: TextStyle(color: textLabelColor),
-                    filled: true,
-                    fillColor: fieldBgColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    prefixIcon: Icon(Icons.lock_outline, color: textLabelColor),
-                  ),
+                  label: 'Contraseña',
+                  icon: Icons.lock_outline_rounded,
+                  isObscure: true,
+                  isDark: isDark,
+                  fillColor: inputFill,
+                  borderColor: inputBorder,
+                  textColor: textColor,
+                  hintColor: hintColor,
                 ),
                 const SizedBox(height: 40),
 
+                // --- Botón Entrar (Neon Pink) ---
                 _isLoading
-                    ? CircularProgressIndicator(color: iconColor)
-                    : ElevatedButton(
-                  onPressed: _loginUser,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: buttonBgColor,
-                    foregroundColor: buttonFgColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    ? CircularProgressIndicator(color: isDark ? neonPink : Theme.of(context).primaryColor)
+                    : SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: _loginUser,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDark ? neonPink : Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: isDark ? 10 : 2,
+                      shadowColor: isDark ? neonPink.withOpacity(0.4) : null,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      'ENTRAR',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
                     ),
                   ),
-                  child: const Text('Entrar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
                 const SizedBox(height: 20),
 
+                // --- Link Registro ---
                 TextButton(
                   onPressed: () {
                     Navigator.push(
@@ -168,13 +186,61 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (context) => const RegisterScreen()),
                     );
                   },
-                  child: Text(
-                    '¿No tienes cuenta? Regístrate',
-                    style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
+                  child: RichText(
+                    text: TextSpan(
+                      text: '¿No tienes cuenta? ',
+                      style: TextStyle(color: hintColor),
+                      children: [
+                        TextSpan(
+                          text: 'Regístrate',
+                          style: TextStyle(
+                            color: isDark ? neonCyan : Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget auxiliar para inputs con estilo consistente
+  Widget _buildCyberInput({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isObscure = false,
+    required bool isDark,
+    required Color fillColor,
+    required Color borderColor,
+    required Color textColor,
+    required Color hintColor,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isObscure,
+      style: TextStyle(color: textColor),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: hintColor),
+        prefixIcon: Icon(icon, color: hintColor),
+        filled: true,
+        fillColor: fillColor,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: borderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF40C4FF) : Colors.deepPurple, // Cian al enfocar en oscuro
+            width: 1.5,
           ),
         ),
       ),

@@ -37,8 +37,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Registro exitoso. Ahora inicia sesión.'),
+            content: Text('¡Cuenta creada! Inicia sesión.'),
             backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -46,8 +47,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al registrar: ${e.message}'),
+            content: Text('Error: ${e.message}'),
             backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }
@@ -70,116 +72,160 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final themeService = Provider.of<ThemeService>(context);
+    final bool isDark = themeService.isDarkMode;
 
-    final Color textColor = themeService.isDarkMode ? Colors.white : Colors.black87;
-    final Color textLabelColor = themeService.isDarkMode ? Colors.white70 : Colors.black54;
-    final Color fieldBgColor = themeService.isDarkMode ? Colors.white.withOpacity(0.1) : Colors.white;
-    final Color buttonBgColor = themeService.isDarkMode ? Colors.white : Colors.deepPurpleAccent;
-    final Color buttonFgColor = themeService.isDarkMode ? Colors.deepPurpleAccent : Colors.white;
-    final Color iconColor = themeService.isDarkMode ? Colors.white : Colors.black87;
-
+    // Colores
+    final Color neonPink = const Color(0xFFD040C0);
+    final Color neonCyan = const Color(0xFF40C4FF);
+    final Color textColor = isDark ? Colors.white : Colors.black87;
+    final Color hintColor = isDark ? Colors.white54 : Colors.black45;
+    final Color inputFill = isDark ? const Color(0xFF1F1B40).withOpacity(0.6) : Colors.white;
+    final Color inputBorder = isDark ? Colors.white10 : Colors.grey.shade300;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: textColor),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: themeService.isDarkMode
-            ? BoxDecoration(
+        decoration: isDark
+            ? const BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.blueAccent.shade100,
-              Colors.deepPurpleAccent.shade100,
+              Color(0xFF0A0A1E),
+              Color(0xFF181035),
             ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         )
-            : BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(32.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Crear Cuenta',
+            : BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.person_add_alt_1_rounded,
+                  size: 80,
+                  color: isDark ? neonCyan : Theme.of(context).primaryColor,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Crear Cuenta',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    color: textColor,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Únete a la comunidad Cercasco',
+                  style: TextStyle(fontSize: 16, color: hintColor),
+                ),
+                const SizedBox(height: 40),
+
+                // --- Input Email ---
+                _buildCyberInput(
+                  controller: emailController,
+                  label: 'Correo electrónico',
+                  icon: Icons.email_outlined,
+                  isDark: isDark,
+                  fillColor: inputFill,
+                  borderColor: inputBorder,
+                  textColor: textColor,
+                  hintColor: hintColor,
+                ),
+                const SizedBox(height: 20),
+
+                // --- Input Password ---
+                _buildCyberInput(
+                  controller: passwordController,
+                  label: 'Contraseña',
+                  icon: Icons.lock_outline_rounded,
+                  isObscure: true,
+                  isDark: isDark,
+                  fillColor: inputFill,
+                  borderColor: inputBorder,
+                  textColor: textColor,
+                  hintColor: hintColor,
+                ),
+                const SizedBox(height: 40),
+
+                // --- Botón Registrar (Neon Pink) ---
+                _isLoading
+                    ? CircularProgressIndicator(color: isDark ? neonPink : Theme.of(context).primaryColor)
+                    : SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: _registerUser,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: isDark ? neonPink : Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      elevation: isDark ? 10 : 2,
+                      shadowColor: isDark ? neonPink.withOpacity(0.4) : null,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text(
+                      'REGISTRAR',
                       style: TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
-                    ),
-                    const SizedBox(height: 40),
-
-                    TextField(
-                      controller: emailController,
-                      style: TextStyle(color: textColor),
-                      decoration: InputDecoration(
-                        labelText: 'Correo electrónico',
-                        labelStyle: TextStyle(color: textLabelColor),
-                        filled: true,
-                        fillColor: fieldBgColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        prefixIcon: Icon(Icons.email_outlined, color: textLabelColor),
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    const SizedBox(height: 20),
-
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      style: TextStyle(color: textColor),
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        labelStyle: TextStyle(color: textLabelColor),
-                        filled: true,
-                        fillColor: fieldBgColor,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        prefixIcon: Icon(Icons.lock_outline, color: textLabelColor),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 40),
-
-                    _isLoading
-                        ? CircularProgressIndicator(color: iconColor)
-                        : ElevatedButton(
-                      onPressed: _registerUser,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                        backgroundColor: buttonBgColor,
-                        foregroundColor: buttonFgColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text('Registrar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
 
-            Positioned(
-              top: 40,
-              left: 10,
-              child: SafeArea(
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back_ios_new, color: iconColor),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ),
-          ],
+  Widget _buildCyberInput({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isObscure = false,
+    required bool isDark,
+    required Color fillColor,
+    required Color borderColor,
+    required Color textColor,
+    required Color hintColor,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: isObscure,
+      style: TextStyle(color: textColor),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: hintColor),
+        prefixIcon: Icon(icon, color: hintColor),
+        filled: true,
+        fillColor: fillColor,
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: borderColor),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(
+            color: isDark ? const Color(0xFF40C4FF) : Colors.deepPurple,
+            width: 1.5,
+          ),
         ),
       ),
     );
