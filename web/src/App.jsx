@@ -5,13 +5,13 @@ import Problem from './components/Problem';
 import Solution from './components/Solution';
 import Features from './components/Features';
 import Footer from './components/Footer';
+import AppShowcase from './components/AppShowcase';
 
 function App() {
   return (
     <>
       <Header />
       <main>
-        {/* Envolvemos cada componente en un div con ID para la navegación */}
         <div id="home">
           <Hero />
         </div>
@@ -21,8 +21,8 @@ function App() {
         <div id="solution">
           <Solution />
         </div>
-        {/* Features ya tiene el ID dentro de su propio componente, pero esto asegura el orden */}
         <Features />
+        <AppShowcase />
       </main>
       <Footer />
     </>

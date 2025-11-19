@@ -8,10 +8,10 @@ export default function Header() {
           Cercasco
         </a>
         <nav className="nav-links">
-          <a href="#home">Inicio</a>
           <a href="#problem">Problema</a>
           <a href="#solution">Solución</a>
           <a href="#features">Circuito</a>
+          <a href="#app">Aplicación</a>
         </nav>
       </div>
     </header>

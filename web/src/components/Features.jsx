@@ -11,12 +11,14 @@ function CircuitModel() {
 export default function Features() {
   return (
     <section className="py-28 relative overflow-hidden" id="features">
-      <div className="container-custom">
-        <h2 className="section-title">Ingeniería Interior</h2>
+      <div className="container mx-auto px-4">
+        <h2 className="section-title text-center text-4xl font-bold text-accent mb-16 drop-shadow-[0_0_15px_rgba(0,198,255,0.5)]">
+          Ingeniería Interior
+        </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* --- COLUMNA IZQUIERDA: TEXTO TÉCNICO --- */}
-          <div className="glass-card">
+          <div className="glass-card p-8 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
             <h3 className="text-3xl font-bold text-accent mb-6">
               Arquitectura de Hardware
             </h3>
@@ -61,12 +63,9 @@ export default function Features() {
 
           {/* --- COLUMNA DERECHA: VISOR 3D DEL CIRCUITO --- */}
           <div className="flex flex-col items-center w-full">
-            {/* Caja estilo Neón/Glass similar al Hero */}
             <div className="w-full h-[500px] bg-white/5 backdrop-blur-sm rounded-3xl border border-accent/20 shadow-[0_0_40px_rgba(0,198,255,0.1)] overflow-hidden relative">
-              {/* AJUSTE DE CÁMARA: [0, 10, 30] aleja la cámara significativamente */}
               <Canvas camera={{ position: [0, 10, 30], fov: 40 }}>
                 <Suspense fallback={null}>
-                  {/* adjustCamera={false} es CLAVE para que Stage respete nuestra posición manual */}
                   <Stage
                     environment="city"
                     intensity={0.5}
