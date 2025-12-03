@@ -6,6 +6,7 @@ import Solution from './components/Solution';
 import Features from './components/Features';
 import Footer from './components/Footer';
 import AppShowcase from './components/AppShowcase';
+import Carrusel from './components/Carrusel';
 
 function App() {
   return (
@@ -21,6 +22,12 @@ function App() {
         <div id="solution">
           <Solution />
         </div>
+
+        {/* 2. Insertar el Carrusel (Idealmente antes o después de Features) */}
+        <div id="process">
+          <Carrusel />
+        </div>
+
         <Features />
         <AppShowcase />
       </main>

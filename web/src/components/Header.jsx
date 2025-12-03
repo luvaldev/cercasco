@@ -10,6 +10,7 @@ export default function Header() {
         <nav className="nav-links">
           <a href="#problem">Problema</a>
           <a href="#solution">Solución</a>
+          <a href="#carrusel">Imagenes</a>
           <a href="#features">Circuito</a>
           <a href="#app">Aplicación</a>
         </nav>
