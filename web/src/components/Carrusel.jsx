@@ -5,13 +5,13 @@ const slides = [
     id: 1,
     title: 'Diseño del Circuito',
     description: 'Esquema inicial y planificación de componentes electrónicos.',
-    src: '/src/assets/Cercasco.webp',
+    src: '/assets/Cercasco.webp',
   },
   {
     id: 2,
     title: 'Prototipado',
     description: 'Primeras pruebas de montaje del hardware.',
-    src: '/src/assets/prototype.webp', 
+    src: '/assets/prototype.webp', 
   },
   {
     id: 3,
