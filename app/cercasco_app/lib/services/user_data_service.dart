@@ -110,6 +110,26 @@ class UserDataService with ChangeNotifier {
     }
   }
 
+  Future<void> incrementAlerts() async {
+    // 1. Actualizamos el valor visualmente rápido
+    _totalAlerts++;
+    notifyListeners();
+
+    // 2. Guardamos en Firebase (si el usuario está logueado)
+    if (_userDocRef != null) {
+      try {
+        await _userDocRef!.set({
+          'stats': {
+            'totalAlerts': FieldValue.increment(1) // Suma 1 atómicamente
+          }
+        }, SetOptions(merge: true));
+        print(">>> ✅ Alerta guardada en Firebase");
+      } catch (e) {
+        print("Error guardando alerta: $e");
+      }
+    }
+  }
+
   // --- Funciones Helper ---
   String _colorToHex(Color color) {
     return '#${color.value.toRadixString(16).padLeft(8, '0')}';

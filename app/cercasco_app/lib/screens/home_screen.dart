@@ -18,15 +18,50 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
 
   // --- CORRECCIÓN: Escaneo inicial en initState ---
+  bool _alertRegistered = false;
+
   @override
   void initState() {
     super.initState();
-    // Ejecuta el escaneo después de que se construya la pantalla
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cercascoService = Provider.of<CercascoService>(context, listen: false);
+      final userDataService = Provider.of<UserDataService>(context, listen: false);
+
+      // 1. Conexión automática (Ya lo tenías)
       if (!cercascoService.isConnected && !cercascoService.isScanning) {
         cercascoService.scanForDevice();
       }
+
+      // 2. ESCUCHAR CAMBIOS DE PELIGRO (NUEVO)
+      cercascoService.addListener(() {
+        // Obtenemos el nivel actual (1 a 5)
+        int nivel = cercascoService.currentAlertLevel;
+
+        // Si el nivel es de peligro (4 o 5) Y no hemos registrado esta alerta aún...
+        if (nivel >= 4 && !_alertRegistered) {
+
+          // ¡Guardar en base de datos!
+          userDataService.incrementAlerts();
+
+          // Marcar como registrada para no sumar 100 veces mientras el coche sigue ahí
+          _alertRegistered = true;
+
+          // Opcional: Mostrar un aviso visual en la pantalla (SnackBar)
+          ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("¡PELIGRO DETECTADO! Nivel $nivel"),
+                backgroundColor: Colors.red,
+                duration: const Duration(seconds: 1),
+              )
+          );
+        }
+
+        // Si el peligro pasó (volvemos a nivel 1, 2 o 3), reseteamos la marca
+        if (nivel < 4) {
+          _alertRegistered = false;
+        }
+      });
     });
   }
 
@@ -157,6 +192,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: reconnectBtnColor,
                                   foregroundColor: isDark ? cyanAccent : Colors.white,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (service.isConnected)
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  service.disconnect();
+                                },
+                                icon: const Icon(Icons.bluetooth_disabled_rounded),
+                                label: const Text(
+                                  'Desconectar',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent, // Color rojo para indicar acción destructiva
+                                  foregroundColor: Colors.white,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -305,13 +363,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: Icons.radar_rounded,
                             label: 'Total de Alertas:',
                             value: '${userData.totalAlerts}',
-                          ),
-                          Divider(color: isDark ? Colors.white10 : Colors.grey.shade200, height: 20),
-                          _buildStatRow(
-                            context: context,
-                            icon: Icons.directions_bike_rounded,
-                            label: 'Último Viaje (km):',
-                            value: '0', // Placeholder
                           ),
                         ],
                       );

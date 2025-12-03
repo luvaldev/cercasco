@@ -9,6 +9,9 @@ class CercascoService with ChangeNotifier {
   BluetoothDevice? _connectedDevice;
   int _batteryLevel = 0;
   bool _isConnected = false;
+  BluetoothCharacteristic? _ledCharacteristic;
+  int _currentAlertLevel = 1;
+
 
   // Estado del escaneo
   bool _isScanning = false;
@@ -19,10 +22,12 @@ class CercascoService with ChangeNotifier {
   int get batteryLevel => _batteryLevel;
   bool get isConnected => _isConnected;
   bool get isScanning => _isScanning;
+  int get currentAlertLevel => _currentAlertLevel;
 
   final String SERVICE_UUID = "0000180f-0000-1000-8000-00805f9b34fb"; // Ejemplo: Batería
   final String BATTERY_CHAR_UUID = "00002a19-0000-1000-8000-00805f9b34fb"; // Ejemplo: Nivel de Batería
   final String LED_CHAR_UUID = "0000180a-0000-1000-8000-00805f9b34fb"; // Ejemplo: Control de LED
+  final String SENSOR_CHAR_UUID = "00002a58-0000-1000-8000-00805f9b34fb";
   // --------------------------------------------------
 
   CercascoService() {
@@ -159,7 +164,10 @@ class CercascoService with ChangeNotifier {
 
       for (var service in services) {
         if (service.uuid.toString() == SERVICE_UUID) {
+          // Aquí empieza el bucle que revisa cada característica
           for (var char in service.characteristics) {
+
+            // 1. Configuración Batería
             if (char.uuid.toString() == BATTERY_CHAR_UUID) {
               await char.setNotifyValue(true);
               char.value.listen((value) {
@@ -169,6 +177,29 @@ class CercascoService with ChangeNotifier {
                 }
               });
             }
+
+            // 2. Configuración LED
+            if (char.uuid.toString() == LED_CHAR_UUID) {
+              _ledCharacteristic = char;
+              print(">>> Característica LED vinculada correctamente.");
+            }
+
+            // 3. NUEVO: Configuración Sensor de Alerta (AQUÍ ES DONDE DEBE IR)
+            if (char.uuid.toString() == SENSOR_CHAR_UUID) {
+              await char.setNotifyValue(true);
+              char.value.listen((value) {
+                if (value.isNotEmpty) {
+                  int newLevel = value[0];
+                  // Solo notificamos si el nivel cambió
+                  if (_currentAlertLevel != newLevel) {
+                    _currentAlertLevel = newLevel;
+                    print(">>> ALERTA RECIBIDA NIVEL: $_currentAlertLevel"); // Log para depurar
+                    notifyListeners(); // Esto avisará al Home
+                  }
+                }
+              });
+            }
+
           }
         }
       }
@@ -178,8 +209,26 @@ class CercascoService with ChangeNotifier {
   }
 
   Future<void> setLedColor(Color color) async {
-    if (_connectedDevice == null || !_isConnected) return;
-    print("Simulación: Enviando color: $color");
+    if (_connectedDevice == null || !_isConnected || _ledCharacteristic == null) {
+      print("No se puede cambiar color: Dispositivo desconectado o servicio no encontrado.");
+      return;
+    }
+
+    List<int> colorBytes = [color.red, color.green, color.blue];
+
+    try {
+      print("Enviando color RGB: $colorBytes");
+      await _ledCharacteristic!.write(colorBytes, withoutResponse: true);
+    } catch (e) {
+      print("Error enviando color: $e");
+    }
+  }
+
+  Future<void> disconnect() async {
+    if (_connectedDevice != null) {
+      print(">>> Desconectando manualmente...");
+      await _connectedDevice!.disconnect();
+    }
   }
 
   @override
