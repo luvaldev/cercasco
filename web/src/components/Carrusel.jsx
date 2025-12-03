@@ -13,18 +13,6 @@ const slides = [
     description: 'Primeras pruebas de montaje del hardware.',
     src: '/prototype.webp',
   },
-  {
-    id: 3,
-    title: 'Montaje Circuito',
-    description: 'Montaje del circuito final.',
-    src: 'https://via.placeholder.com/800x400?text=Resultado+Final',
-  },
-  {
-    id: 4,
-    title: 'Producto Final',
-    description: 'Integración completa del sistema Cercasco.',
-    src: 'https://via.placeholder.com/800x400?text=Resultado+Final',
-  },
 ];
 
 const Carrusel = ({ onOpenGallery }) => {
