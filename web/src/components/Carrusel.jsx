@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
-
 const slides = [
   {
     id: 1,
     title: 'Diseño del Circuito',
     description: 'Esquema inicial y planificación de componentes electrónicos.',
-    src: '/src/assets/blueprint.png',
+    src: '/src/assets/Cercasco.webp',
   },
   {
     id: 2,
     title: 'Prototipado',
     description: 'Primeras pruebas de montaje del hardware.',
-    src: 'https://via.placeholder.com/800x400?text=Prototipado', 
+    src: '/src/assets/prototype.webp', 
   },
   {
     id: 3,
@@ -22,7 +21,7 @@ const slides = [
   },
 ];
 
-const Carrusel = () => {
+const Carrusel = ({ onOpenGallery }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Cambio automático cada 5 segundos
@@ -50,9 +49,11 @@ const Carrusel = () => {
   };
 
   return (
-    <section id="carrusel" className="max-w-[1400px] mx-auto py-16 px-4 relative group">
+    <section
+      id="carrusel"
+      className="max-w-[1400px] mx-auto py-16 px-4 relative group ">
       <h2 className="text-center text-4xl font-bold text-accent mb-16 drop-shadow-[0_0_15px_rgba(0,198,255,0.5)]">
-        <span className='text-white'>Proceso de</span> Desarrollo
+        <span className="text-white">Proceso de</span> Desarrollo
       </h2>
 
       <div className="w-full h-[500px] md:h-[600px] rounded-2xl bg-dark-bg/50 relative overflow-hidden shadow-2xl border border-accent/20">
@@ -124,6 +125,26 @@ const Carrusel = () => {
             </div>
           ))}
         </div>
+      </div>
+      <div className="mt-10 flex justify-center">
+        <button
+          onClick={onOpenGallery}
+          className="px-8 py-3 bg-accent/10 border border-accent text-accent font-bold rounded-full hover:bg-accent hover:text-dark-bg hover:shadow-[0_0_20px_rgba(0,198,255,0.6)] transition-all duration-300 flex items-center gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-5 h-5">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+            />
+          </svg>
+          Ver Galería de Prácticas ESP32
+        </button>
       </div>
     </section>
   );
