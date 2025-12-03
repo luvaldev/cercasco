@@ -79,7 +79,7 @@ export default function Hero() {
 
         {/* Indicador sutil */}
         <div className="absolute bottom-10 right-10 text-white/30 text-xs uppercase tracking-widest animate-pulse pointer-events-none">
-          /// Sistema Cercasco v1.0
+          /// Modelo Interativo - Rotar con el mouse ///
         </div>
       </div>
     </section>
