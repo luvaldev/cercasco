@@ -1,5 +1,5 @@
 import React from 'react';
-import blueprintImg from '/blueprint.png';
+import blueprintImg from '/blueprint.webp';
 
 export default function Solution() {
   return (

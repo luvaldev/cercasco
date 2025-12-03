@@ -3,33 +3,65 @@ import React from 'react';
 const photos = [
   {
     id: 1,
-    src: 'https://via.placeholder.com/600x400?text=ESP32+Captura+1',
+    src: '/ESP32-CAM/1.webp',
     label: 'Prueba de Detección',
   },
   {
     id: 2,
-    src: 'https://via.placeholder.com/600x400?text=ESP32+Captura+2',
-    label: 'Entorno Nocturno',
+    src: '/ESP32-CAM/2.webp',
+    label: 'Prueba de Detección',
   },
   {
     id: 3,
-    src: 'https://via.placeholder.com/600x400?text=ESP32+Captura+3',
-    label: 'Calibración Lente',
+    src: '/ESP32-CAM/3.webp',
+    label: 'Prueba de Detección',
   },
   {
     id: 4,
-    src: 'https://via.placeholder.com/600x400?text=ESP32+Captura+4',
-    label: 'Prueba de Campo',
+    src: '/ESP32-CAM/4.webp',
+    label: 'Prueba de Detección',
   },
   {
     id: 5,
-    src: 'https://via.placeholder.com/600x400?text=ESP32+Captura+5',
-    label: 'Detección de Casco',
+    src: '/ESP32-CAM/5.webp',
+    label: 'Prueba de Detección',
   },
   {
     id: 6,
-    src: 'https://via.placeholder.com/600x400?text=ESP32+Captura+6',
-    label: 'Streaming Web',
+    src: '/ESP32-CAM/6.webp',
+    label: 'Prueba de Detección',
+  },
+  {
+    id: 7,
+    src: '/ESP32-CAM/7.webp',
+    label: 'Prueba de Detección',
+  },
+  {
+    id: 8,
+    src: '/ESP32-CAM/8.webp',
+    label: 'Prueba de Detección',
+  },
+
+  {
+    id: 9,
+    src: '/ESP32-CAM/9.webp',
+    label: 'Prueba de Detección',
+  },
+  {
+    id: 10,
+    src: '/ESP32-CAM/10.webp',
+    label: 'Prueba de Detección',
+  },
+
+  {
+    id: 11,
+    src: '/ESP32-CAM/11.webp',
+    label: 'Prueba de Detección',
+  },
+  {
+    id: 12,
+    src: '/ESP32-CAM/12.webp',
+    label: 'Prueba de Detección',
   },
 ];
 
